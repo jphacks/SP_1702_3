@@ -17,6 +17,7 @@ func main() {
 	})
 	router.POST("/collect", controller.Collect)
 	router.POST("/talk", controller.Talk)
+	router.POST("/soul", controller.Soul)
 
 	log.Fatal(router.Run(":9000"))
 }
