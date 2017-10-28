@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -26,7 +28,7 @@ type TalkContent struct {
 type DocomoJSON struct {
 	Response string `json:"utt"`
 	Read     string `json:"yomi"`
-	Mode     string `json:"dialog"`
+	Mode     string `json:"mode"`
 	Da       string `json:"da"`
 	Context  string `json:"context"`
 }
@@ -35,14 +37,34 @@ type DocomoJSON struct {
 func Talk(c *gin.Context) {
 	talkContent := new(TalkContent)
 	c.BindJSON(talkContent)
-	c.JSON(http.StatusOK, talkContent)
+	content, err := Chatting(talkContent.Text)
+	fmt.Printf("%#v\n\n", content)
+	if err != nil {
+		log.Fatal(err)
+		c.String(http.StatusInternalServerError, "faild")
+	}
+	c.JSON(http.StatusOK, TalkContent{Text: content.Read})
 }
 
 //Chatting return chatting response
 func Chatting(text string) (DocomoJSON, error) {
-	resp, err := http.Get(DOCOMOURL + "?APIKEY=" + DOCOMOAPIKEY)
+	jsonStr := `{"utt":"` + text + `"}`
+	url := DOCOMOURL + "?APIKEY=" + DOCOMOAPIKEY
+
+	req, err := http.NewRequest(
+		"POST",
+		url,
+		bytes.NewBuffer([]byte(jsonStr)),
+	)
 	if err != nil {
 		log.Fatal(err)
+		return DocomoJSON{}, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
 		return DocomoJSON{}, err
 	}
 	defer resp.Body.Close()
