@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"github.com/labstack/gommon/log"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/youtangai/Otomo_backend/model"
