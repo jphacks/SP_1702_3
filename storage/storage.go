@@ -25,6 +25,10 @@ func init() {
 	if !Storage.HasTable(&model.IndoorInfo{}) {
 		Storage.AutoMigrate(&model.IndoorInfo{})
 	}
+	if !Storage.HasTable(&model.Soul{}) {
+		Storage.AutoMigrate(&model.Soul{})
+		Storage.Create(&model.Soul{UserID: 1, OnDevice: true})
+	}
 }
 
 //GetDBContext is return DBcontext
