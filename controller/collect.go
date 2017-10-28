@@ -4,18 +4,24 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/youtangai/Otomo_backend/model"
+	"github.com/youtangai/Otomo_backend/storage"
 )
-
-//IndoorInfo is users indoor information
-type IndoorInfo struct {
-	Temperature  float32 `json:"temperature"`
-	Humidity     int     `json:"humidity"`
-	Illumination int     `json:"illumination"`
-}
 
 //Collect is collection indoor info function
 func Collect(c *gin.Context) {
-	indoorInfo := new(IndoorInfo)
+	indoorInfo := new(model.IndoorInfoJSON)
 	c.BindJSON(indoorInfo)
-	c.JSON(http.StatusOK, indoorInfo)
+	InsertIndoorInfo(*indoorInfo)
+	c.String(http.StatusOK, "success")
+}
+
+//InsertIndoorInfo is saving function
+func InsertIndoorInfo(info model.IndoorInfoJSON) {
+	record := new(model.IndoorInfo)
+	record.Temperature = info.Temperature
+	record.Humidity = info.Humidity
+	record.Illumination = info.Illumination
+	db := storage.GetDBContext()
+	db.Create(&record)
 }
