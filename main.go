@@ -15,8 +15,8 @@ func main() {
 	router.GET("hc", func(c *gin.Context) {
 		c.String(http.StatusOK, "I'm Healty!\n")
 	})
-	router.POST("/collect", controller.collect)
-	// router.POST("/talk")
+	router.POST("/collect", controller.Collect)
+	router.POST("/talk", controller.Talk)
 
 	log.Fatal(router.Run(":9000"))
 }
